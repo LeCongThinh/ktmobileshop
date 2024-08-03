@@ -79,13 +79,13 @@
                                 {{-- Mua hàng --}}
                                 <div class="bottom-content">
                                     <div class="row align-items-end">
-                                        <div class="col-lg-10 col-md-4 col-12">
+                                        <div class="col-lg-12 col-md-4 col-12">
                                             <div class="button cart-button" style="margin-bottom: 10px">
                                                 <button class="btn" id="buy-now-btn" style="width: 100%;">Mua
                                                     ngay</button>
                                             </div>
                                         </div>
-                                        <div class="col-lg-10 col-md-4 col-12">
+                                        <div class="col-lg-12 col-md-4 col-12">
                                             <div class="wish-button">
                                                 <form action="{{ route('cart.add') }}" method="POST"
                                                     class="add-to-cart-form">

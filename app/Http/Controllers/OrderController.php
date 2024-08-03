@@ -36,6 +36,11 @@ class OrderController extends Controller
 
     public function store(StoreOrderRequest $request)
     {
+        foreach (Cart::content() as $item) {
+            if ($item->qty > 5) {
+                return redirect()->back()->with('error', 'Đặt hàng với số lượng mỗi sản phẩm không quá 5');
+            }
+        }
         try
         {
             //Lưu vào bảng đơn hàng
@@ -58,8 +63,8 @@ class OrderController extends Controller
                 OrderDetail::create([
                     'order_id' => $order->id,
                     'product_id' => $item->id,
-                    'product_name'=> $item->name,
-                    'product_image'=> $item->options->image,
+                    'product_name' => $item->name,
+                    'product_image' => $item->options->image,
                     'quantity' => $item->qty,
                     'price' => $item->price,
                     'total' => $item->subtotal, //Tổng giá trị của từng sản phẩm
@@ -70,7 +75,7 @@ class OrderController extends Controller
             // Reset giỏ hàng
             session()->forget('cartItemsCount');
             // Thành công
-            return redirect()->route('viewPayment',['orderId' => $order->code])->with('success', 'Đặt hàng thành công!');
+            return redirect()->route('viewPayment', ['orderId' => $order->code])->with('success', 'Đặt hàng thành công!');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Đặt hàng không thành công: ' . $e->getMessage());
         }

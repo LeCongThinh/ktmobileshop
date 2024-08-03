@@ -188,7 +188,7 @@
                     <div id="error-alert" class="alert alert-success alert-dismissible fade show" role="alert"
                         style="background-color: #FF6969; font-size: 17px; color: #910909">
                         <b>Không thành công</b>
-                        <br><span>{{ session('success') }}</span>
+                        <br><span>{{ session('error') }}</span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"
                             aria-label="Close"></button>
                     </div>
@@ -205,9 +205,9 @@
 
             <form action="{{ route('order.store') }}" method="POST">
                 @csrf
-                <div class="row align-items-center" >
+                <div class="row align-items-center">
                     <!-- DataTable with Hover -->
-                    <div class="col-lg-20 col-12 custom-padding-right" >
+                    <div class="col-lg-20 col-12 custom-padding-right">
                         <div class="card mb-4" style="margin-left: 9%; margin-right: 9%; margin-top: 20px">
                             <div class="table-responsive p-3" style="border: 1px solid #cacaca;">
                                 <table class="table align-items-center table-flush table-hover" id="dataTableHover">
@@ -271,7 +271,8 @@
                                             <b for="name" class="col-sm-1 col-form-label">Họ tên</b>
                                             <div class="col-sm-15">
                                                 <input type="text" class="form-control" id="name"
-                                                    name="username" value="{{ old('username', Auth::check() ? Auth::user()->name : '')}}"
+                                                    name="username"
+                                                    value="{{ old('username', Auth::check() ? Auth::user()->name : '') }}"
                                                     placeholder="Họ tên...">
                                                 <div style="color: red">
                                                     @if ($errors->has('username'))
@@ -284,7 +285,8 @@
                                             <b for="phone" class="col-sm-1 col-form-label">Số điện thoại</b>
                                             <div class="col-sm-15">
                                                 <input type="text" class="form-control" id="phone"
-                                                    name="phone" value="{{ old('phone', Auth::check() ? Auth::user()->phone : '') }}"
+                                                    name="phone"
+                                                    value="{{ old('phone', Auth::check() ? Auth::user()->phone : '') }}"
                                                     placeholder="Số điện thoại...">
                                                 <div style="color: red">
                                                     @if ($errors->has('phone'))
@@ -297,7 +299,8 @@
                                             <b for="email" class="col-sm-1 col-form-label">Email</b>
                                             <div class="col-sm-15">
                                                 <input type="text" class="form-control" id="email"
-                                                    name="email" value="{{ old('email', Auth::check() ? Auth::user()->email : '') }}"
+                                                    name="email"
+                                                    value="{{ old('email', Auth::check() ? Auth::user()->email : '') }}"
                                                     placeholder="Email...">
                                                 <div style="color: red">
                                                     @if ($errors->has('email'))
@@ -422,40 +425,40 @@
                                 </div>
                             </div>
                             <div class="col-lg-4 col-12">
-                                <div class="single-block" style="border: 1px solid #cacaca;>
+                                <div class="single-block"
+                                    style="border: 1px solid #cacaca;>
                                     <div class="info-body">
-                                        <h6 class="total-items-order">Tổng cộng {{ session('cartItemsCount', 0) }} sản
-                                            phẩm</h6>
-                                        <div class="table-responsive">
-                                            <table class="table align-items-center table-flush table-hover"
-                                                id="dataTableHover">
-                                                <thead class="thead-light">
-                                                    <tr>
-                                                        <th>THÀNH TIỀN: </th>
-                                                        <th id="total"><strong
-                                                                style="font-size: 20px">{{ Cart::subtotal(0, ',', '.') }}
-                                                                đ</strong></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td></td>
-                                                        <td style="font-style: italic;">
-                                                            (Đã bao gồm VAT)
-                                                        </td>
-                                                    </tr>
+                                    <h6 class="total-items-order">Tổng cộng {{ session('cartItemsCount', 0) }} sản
+                                        phẩm</h6>
+                                    <div class="table-responsive">
+                                        <table class="table align-items-center table-flush table-hover"
+                                            id="dataTableHover">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>THÀNH TIỀN: </th>
+                                                    <th id="total"><strong
+                                                            style="font-size: 20px">{{ Cart::subtotal(0, ',', '.') }}
+                                                            đ</strong></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td></td>
+                                                    <td style="font-style: italic;">
+                                                        (Đã bao gồm VAT)
+                                                    </td>
+                                                </tr>
 
-                                                </tbody>
-                                            </table>
-                                            <button type="submit"
-                                                id="view-more-specs-btn"class="btn btn-primary btn-icon-split"
-                                                style="width: 100%; margin-top: 20px; border-radius: 10px;">
-                                                <span class="icon text-white-100">
-                                                    <i class="lni lni-cart-full"></i>
-                                                </span>
-                                                <span class="text">Đặt hàng</span>
-                                            </button>
-                                        </div>
+                                            </tbody>
+                                        </table>
+                                        <button type="submit"
+                                            id="view-more-specs-btn"class="btn btn-primary btn-icon-split"
+                                            style="width: 100%; margin-top: 20px; border-radius: 10px;">
+                                            <span class="icon text-white-100">
+                                                <i class="lni lni-cart-full"></i>
+                                            </span>
+                                            <span class="text">Đặt hàng</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>

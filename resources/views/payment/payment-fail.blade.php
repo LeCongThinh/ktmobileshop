@@ -342,9 +342,9 @@
             var form = document.getElementById('paymentForm');
 
             if (paymentMethod === 'momo') {
-                form.action = '{{ route('momoPayment') }}';
+                form.action = '{{ route('momoPayment', ['orderId' => $order->code]) }}';
             } else if (paymentMethod === 'vnpay') {
-                form.action = '{{ route('vnpayPayment') }}';
+                form.action = '{{ route('vnpayPayment', ['orderId' => $order->code]) }}';
             } else if (paymentMethod === 'vietqr') {
                 const amount = document.getElementById('amount').value;
                 const addInfo = document.getElementById('addInfo').value;

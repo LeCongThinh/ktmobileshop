@@ -20,7 +20,7 @@
         <img src="{{ $qrUrl }}" alt="VietQR Code" id="qrCodeImage">
     </div>
     <script>
-        var secondsLeft = 120;
+        var secondsLeft = 180;
 
         // Hiển thị thời gian đếm ngược ban đầu
         document.getElementById('countdown').textContent = 'Thời gian còn lại: ' + secondsLeft + ' giây';

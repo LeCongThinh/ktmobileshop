@@ -122,11 +122,11 @@ Route::post('/order', [OrderController::class, 'store'])->name('order.store');
 Route::get('/payment/{orderId}', [PaymentController::class, 'viewPayment'])->name('viewPayment');
 Route::get('/payment-fail/{orderId}', [PaymentController::class, 'viewPaymentFail'])->name('viewPaymentFail');
 //Thanh toán MoMo QR code
-Route::post('/payment/momo', [PaymentController::class, 'MoMo'])->name('momoPayment');
-Route::match(['get', 'post'], '/momo/callback', [PaymentController::class, 'handleMoMoCallback'])->name('callbackMoMo');
+Route::post('/payment/{orderId}/momo', [PaymentController::class, 'MoMo'])->name('momoPayment');
+Route::match(['get', 'post'], '/momo/{orderId}/callback', [PaymentController::class, 'handleMoMoCallback'])->name('callbackMoMo');
 //Thanh toán VNPay banking
-Route::post('/payment/vnpay', [PaymentController::class, 'Vnpay'])->name('vnpayPayment');
-Route::get('/vnpay-return', [PaymentController::class, 'vnpayReturn'])->name('vnpayReturn');
+Route::post('/payment/{orderId}/vnpay', [PaymentController::class, 'Vnpay'])->name('vnpayPayment');
+Route::match(['get', 'post'], '/vnpay-return/{orderId}', [PaymentController::class, 'vnpayReturn'])->name('vnpayReturn');
 //Thanh toán chuyển khoản ngân hàng bằng QR code
 Route::get('/payment', [PaymentController::class, 'showQRCode'])->name('showQRCode');
 Route::get('/updateOrderStatus/{orderId}', [PaymentController::class, 'updateOrderStatus'])->name('updateOrderStatus');

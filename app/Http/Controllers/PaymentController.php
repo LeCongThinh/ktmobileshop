@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+
 class PaymentController extends Controller
 {
     /**
@@ -55,8 +56,10 @@ class PaymentController extends Controller
             ->leftJoin('districts', 'orders.district_id', '=', 'districts.id')
             ->leftJoin('wards', 'orders.ward_id', '=', 'wards.id')
             ->select('orders.*', 'provinces.name as province_name', 'districts.name as district_name', 'wards.name as ward_name')
-            ->latest('orders.created_at')
+            ->where('orders.code', $orderId)
             ->first();
+
+        // dd($order);
         // Lấy chi tiết đơn hàng
         $orderDetails = OrderDetail::where('order_id', $order->id)->get();
         $this->fixImage($orderDetails);
@@ -76,8 +79,10 @@ class PaymentController extends Controller
             ->leftJoin('districts', 'orders.district_id', '=', 'districts.id')
             ->leftJoin('wards', 'orders.ward_id', '=', 'wards.id')
             ->select('orders.*', 'provinces.name as province_name', 'districts.name as district_name', 'wards.name as ward_name')
-            ->latest('orders.created_at')
+            ->where('orders.code', $orderId)
             ->first();
+            //dd($order);
+            
         // Lấy chi tiết đơn hàng
         $orderDetails = OrderDetail::where('order_id', $order->id)->get();
         $this->fixImage($orderDetails);
@@ -88,15 +93,20 @@ class PaymentController extends Controller
 
         return view('payment.payment-fail', compact('order', 'orderDetails', 'orderId'));
     }
-    public function MoMo(Request $request)
+    public function MoMo(Request $request, $orderId)
     {
         $order = DB::table('orders')
             ->leftJoin('provinces', 'orders.province_id', '=', 'provinces.id')
             ->leftJoin('districts', 'orders.district_id', '=', 'districts.id')
             ->leftJoin('wards', 'orders.ward_id', '=', 'wards.id')
             ->select('orders.*', 'provinces.name as province_name', 'districts.name as district_name', 'wards.name as ward_name')
-            ->latest('orders.created_at')
+            ->where('orders.code', $orderId)
             ->first();
+            //dd($order);
+        // Kiểm tra nếu không tìm thấy đơn hàng
+        if (!$order) {
+            return redirect()->back()->with('error', 'Không tìm thấy đơn hàng.');
+        }
         // Lấy code và amount từ request
         $code = $request->input('code');
         $amount = $request->input('amount');
@@ -111,8 +121,8 @@ class PaymentController extends Controller
         $orderId = 'ORD-' . $code . '-' . strtoupper(uniqid());
 
         $orderInfo = "Thanh toán $orderId qua mã MoMo QR";
-        $redirectUrl = route('callbackMoMo'); // URL callback để MoMo gửi kết quả giao dịch
-        $ipnUrl = route('callbackMoMo'); // IPN URL để MoMo gửi thông báo về giao dịch
+        $redirectUrl = route('callbackMoMo', ['orderId' => $order->code]); // URL callback để MoMo gửi kết quả giao dịch
+        $ipnUrl = route('callbackMoMo', ['orderId' => $order->code]); // IPN URL để MoMo gửi thông báo về giao dịch
         $extraData = "";
 
         $requestId = time() . "";
@@ -147,26 +157,27 @@ class PaymentController extends Controller
         // dd($resultCode);
         if ($resultCode == 22) {
             // Người dùng nhấn nút quay về hoặc giao dịch bị hủy
-            return redirect()->route('viewPaymentFail', ['orderId' => $order->code])->with('cancel-payment', 'TỔNG TIỀN ĐƠN HÀNG VƯỢT QUÁ HẠN MỨC GIAO DỊCH CỦA MOMO QR!');
+            return redirect()->route('viewPayment', ['orderId' => $order->code])->with('cancel-payment', 'TỔNG TIỀN ĐƠN HÀNG VƯỢT QUÁ HẠN MỨC GIAO DỊCH CỦA MOMO QR!');
         }
         if (isset($jsonResult['payUrl'])) {
             // Chuyển hướng đến trang thanh toán của MoMo
             return redirect()->away($jsonResult['payUrl']);
         } else {
             // Xử lý khi thanh toán thất bại hoặc bị hủy
-            return redirect()->route('viewPaymentFail', ['orderId' => $order->code]);
+            return redirect()->route('viewPayment', ['orderId' => $order->code]);
         }
     }
 
-    public function handleMoMoCallback(Request $request)
+    public function handleMoMoCallback(Request $request, $orderId)
     {
         $order = DB::table('orders')
             ->leftJoin('provinces', 'orders.province_id', '=', 'provinces.id')
             ->leftJoin('districts', 'orders.district_id', '=', 'districts.id')
             ->leftJoin('wards', 'orders.ward_id', '=', 'wards.id')
             ->select('orders.*', 'provinces.name as province_name', 'districts.name as district_name', 'wards.name as ward_name')
-            ->latest('orders.created_at')
+            ->where('orders.code', $orderId)
             ->first();
+            //dd($order);
         // Lấy dữ liệu từ query string (GET request) hoặc body (POST request)
         $jsonResult = $request->all();
 
@@ -217,13 +228,20 @@ class PaymentController extends Controller
         return $result;
     }
 
-    public function Vnpay(Request $request)
+    public function Vnpay(Request $request, $orderId)
     {
+        $order = DB::table('orders')
+            ->leftJoin('provinces', 'orders.province_id', '=', 'provinces.id')
+            ->leftJoin('districts', 'orders.district_id', '=', 'districts.id')
+            ->leftJoin('wards', 'orders.ward_id', '=', 'wards.id')
+            ->select('orders.*', 'provinces.name as province_name', 'districts.name as district_name', 'wards.name as ward_name')
+            ->where('orders.code', $orderId)
+            ->first();
         // Lấy code và amount từ request
         $code = $request->input('code');
         $amount = $request->input('amount');
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        $vnp_Returnurl = route('vnpayReturn');
+        $vnp_Returnurl = route('vnpayReturn', ['orderId' => $order->code]);
         //Thông tin thanh toán trong email: 0306201491@caothang.edu.vn
         $vnp_TmnCode = "5YJDWX0V";
         $vnp_HashSecret = "KF55RDDKKDFCJVQFWUSD0XMTBZ2X24UH";
@@ -283,7 +301,7 @@ class PaymentController extends Controller
         return redirect($vnp_Url);
     }
 
-    public function vnpayReturn(Request $request)
+    public function vnpayReturn(Request $request, $orderId)
     {
         // dd($request->all());
         $order = DB::table('orders')
@@ -291,14 +309,14 @@ class PaymentController extends Controller
             ->leftJoin('districts', 'orders.district_id', '=', 'districts.id')
             ->leftJoin('wards', 'orders.ward_id', '=', 'wards.id')
             ->select('orders.*', 'provinces.name as province_name', 'districts.name as district_name', 'wards.name as ward_name')
-            ->latest('orders.created_at')
+            ->where('orders.code', $orderId)
             ->first();
         // Lấy các tham số từ request và kiểm tra tính hợp lệ
         $vnp_ResponseCode = $request->input('vnp_ResponseCode');
         $vnp_TxnRef = $request->input('vnp_TxnRef');
         $vnp_Amount = $request->input('vnp_Amount');
 
-       // dd($vnp_ResponseCode);
+        // dd($vnp_ResponseCode);
 
         // Kiểm tra mã phản hồi
         if ($vnp_ResponseCode == '00') {

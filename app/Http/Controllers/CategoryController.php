@@ -80,17 +80,20 @@ class CategoryController extends Controller
         }])->where('status', 1)->get();
 
         // Lấy sản phẩm theo danh mục và sắp xếp theo giá nếu có yêu cầu
-        $query = $category->products()->where('status', 1);
+        $query = $category->products()
+            ->where('products.status', 1)
+            ->join('product_details', 'products.id', '=', 'product_details.product_id')
+            ->distinct();
 
         if ($request->has('sort')) {
             if ($request->sort == 'price_asc') {
-                $query->orderBy('sale_price', 'asc');
+                $query->orderBy('product_details.sale_price', 'asc');
             } elseif ($request->sort == 'price_desc') {
-                $query->orderBy('sale_price', 'desc');
+                $query->orderBy('product_details.sale_price', 'desc');
             }
         }
 
-        $listProduct = $query->get();
+        $listProduct = $query->select('products.*')->get();
 
         foreach ($listProduct as $p) {
             $this->fixImage($p);

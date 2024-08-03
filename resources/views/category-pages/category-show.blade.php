@@ -45,7 +45,7 @@
                     <br>
                 </div>
             </div>
-            {{-- <h5 style="margin-top: 10px">Lọc sản phẩm theo: </h5>
+            <h5 style="margin-top: 10px">Lọc sản phẩm theo: </h5>
             <div class="text-left mt-4">
                 <button class="btn btn-warning" onclick="sortProducts('price_asc')">Giá tăng dần
                     <i class="lni lni-arrow-up"></i>
@@ -53,7 +53,7 @@
                 <button class="btn btn-warning" onclick="sortProducts('price_desc')">Giá giảm dần
                     <i class="lni lni-arrow-down"></i>
                 </button>
-            </div><br> --}}
+            </div><br>
         </div>
     </section>
 

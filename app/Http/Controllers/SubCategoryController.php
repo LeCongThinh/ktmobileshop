@@ -7,9 +7,9 @@ use App\Http\Requests\UpdateSubCategoryRequest;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\SubCategory;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 
 class SubCategoryController extends Controller
 {
@@ -27,7 +27,7 @@ class SubCategoryController extends Controller
      */
     public function create()
     {
-        $list = Category::where('status',1)->get();
+        $list = Category::where('status', 1)->get();
         return view('admin.subcategories.subcategory-create', compact('list'));
     }
 
@@ -84,17 +84,20 @@ class SubCategoryController extends Controller
             $query->where('status', 1);
         }])->where('status', 1)->get();
         // Lấy sản phẩm theo danh mục và sắp xếp theo giá nếu có yêu cầu
-        $query = Product::where('subcategory_id', $subcategory->id)->where('status', 1);
+        $query = Product::where('subcategory_id', $subcategory->id)
+            ->where('status', 1)
+            ->join('product_details', 'products.id', '=', 'product_details.product_id')
+            ->distinct();
 
         if ($request->has('sort')) {
             if ($request->sort == 'price_asc') {
-                $query->orderBy('sale_price', 'asc');
+                $query->orderBy('product_details.sale_price', 'asc');
             } elseif ($request->sort == 'price_desc') {
-                $query->orderBy('sale_price', 'desc');
+                $query->orderBy('product_details.sale_price', 'desc');
             }
         }
 
-        $listProduct = $query->get();
+        $listProduct = $query->select('products.*')->get();
 
         foreach ($listProduct as $p) {
             $this->fixImage($p);
@@ -130,7 +133,7 @@ class SubCategoryController extends Controller
             return redirect()->route('subcategories.index')->with('success', 'Cập nhật loại sản phẩm thành công!');
         } catch (\Exception $e) {
             // dd($subcategory);
-          dd('Failed to update SubCategory', ['error' => $e->getMessage(), 'subCategory' => $subcategory]);
+            dd('Failed to update SubCategory', ['error' => $e->getMessage(), 'subCategory' => $subcategory]);
             return redirect()->route('subcategories.index')->with('error', 'Cập nhật loại sản phẩm không thành công!');
         }
     }

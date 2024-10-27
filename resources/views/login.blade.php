@@ -124,7 +124,7 @@
             }, 3000);
             setTimeout(function() {
                 $("#stop-alert").alert('close'); // Đóng alert sau 2 giây
-            }, 3000);
+            }, 6000000);
         })
     </script>
 </body>

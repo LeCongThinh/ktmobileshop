@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterAccountRequest;
+use App\Mail\VerifyAccountMail;
 use App\Models\Members;
 use App\Models\User;
 use Carbon\Carbon;
@@ -51,16 +52,19 @@ class RegisterController extends Controller
                 'created_at' => Carbon::now(),
             ]);
             //Gửi mail với template là "mail-verify-account.blade.php"
-            Mail::send("mail-verify-account", ['token' => $token], function ($message) use ($request) {
-                $message->to($request->email);
-                $message->subject("Kích hoạt tài khoản - KTMobile Shop");
-            });
+            // Mail::send("mail-verify-account", ['token' => $token], function ($message) use ($request) {
+            //     $message->to($request->email);
+            //     $message->subject("Kích hoạt tài khoản - KTMobile Shop");
+            // });
+
+            Mail::to($request->email)->send(new VerifyAccountMail($token));
+
             
             // Thành cônng -> Redirect sang trang login
             return redirect()->route('login')->with('success', 'Đăng ký tài khoản thành công. Vui lòng kiểm tra email để kích hoạt tài khoản.');
         } catch (\Exception $e) {
             // Thất bại -> Redirect sang trang login
-            return redirect()->route('login')->with('error', 'Đăng ký tài khoản không thành công!');
+            return redirect()->route('login')->with('error', $e->getMessage());
         }
     }
 

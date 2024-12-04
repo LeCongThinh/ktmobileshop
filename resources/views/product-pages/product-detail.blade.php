@@ -62,7 +62,7 @@
                                     @foreach ($product->details as $index => $variant)
                                         <div class="col-lg-4 col-md-4 col-12">
                                             <div id="color-variant-{{ $index }}" class="color-variant"
-                                                style="font-size: 17px; color: black; display: flex; justify-content: center; align-items: center; margin-top: 10px; border: {{ $index === 0 ? '2px solid #019fb3' : '2px solid rgb(228, 228, 228)' }}; border-radius: 10px; cursor: pointer;"
+                                                style="font-size: 16px; color: black; display: flex; justify-content: center; align-items: center; margin-top: 10px; border: {{ $index === 0 ? '2px solid #019fb3' : '2px solid rgb(228, 228, 228)' }}; border-radius: 10px; cursor: pointer;"
                                                 onclick="selectVariant('{{ $variant->id }}', '{{ $variant->color }}', '{{ $variant->sale_price }}', '{{ asset('storage/' . $variant->attribute_image) }}', '{{ $product->name }}')">
 
                                                 <img src="{{ asset('storage/' . $variant->attribute_image) }}"
